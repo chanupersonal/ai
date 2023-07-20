@@ -2,7 +2,7 @@
 FROM nginx:alpine
 
 # Copy your frontend application files to the appropriate directory
-COPY dist /usr/share/nginx/html
+COPY index.html /usr/share/nginx/html
 
 # Expose the port where the web server listens
 EXPOSE 80
