@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Engine</title>
+</head>
+<body>
+    <form id="searchForm">
+        <input type="text" id="queryInput" placeholder="Enter your query...">
+        <button type="submit">Search</button>
+    </form>
+    <div id="searchResults"></div>
+
+    <script>
+        document.getElementById("searchForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const query = document.getElementById("queryInput").value;
+            search(query);
+        });
+
+        async function search(query) {
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+            }
+        }
+
+        function displayResults(data) {
+            const searchResultsDiv = document.getElementById("searchResults");
+            searchResultsDiv.innerHTML = `
+                <p><strong>ChatGPT Response:</strong> ${data.chatgpt_response}</p>
+                <hr>
+                <h3>Google Search Results:</h3>
+            `;
+            if (data.google_results.length > 0) {
+                data.google_results.forEach(result => {
+                    searchResultsDiv.innerHTML += `
+                        <p><a href="${result.link}" target="_blank">${result.title}</a></p>
+                        <p>${result.snippet}</p>
+                        <hr>
+                    `;
+                });
+            } else {
+                searchResultsDiv.innerHTML += `<p>No Google search results found.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
